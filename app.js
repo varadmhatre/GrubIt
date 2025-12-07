@@ -355,20 +355,23 @@ async function setupProductPage(user) {
   const grid = querySel("product-grid");
   const pageTitle = querySel("product-page-title");
 
+  if (!grid) return;
+
   const id = getQueryParam("id");
   const nameParam = getQueryParam("name");
   const priceParam = getQueryParam("price");
 
-  if (id && grid) {
-    // Single product from Firestore
+  // CASE 1: Specific product by Firestore ID (clicked from "View")
+  if (id) {
     try {
       const doc = await db.collection("products").doc(id).get();
       if (!doc.exists) {
         grid.innerHTML = "<p>Product not found.</p>";
         return;
       }
+
       const p = { id: doc.id, ...doc.data() };
-      pageTitle.textContent = p.name;
+      if (pageTitle) pageTitle.textContent = p.name || "Product";
 
       grid.innerHTML = "";
       const card = document.createElement("div");
@@ -386,11 +389,16 @@ async function setupProductPage(user) {
         </div>
       `;
       card.querySelector("button").addEventListener("click", async () => {
+        if (!user) {
+          window.location.href = "login.html";
+          return;
+        }
         const cartRef = db
           .collection("carts")
           .doc(user.uid)
           .collection("items")
           .doc(p.id);
+
         await cartRef.set(
           {
             productId: p.id,
@@ -404,305 +412,137 @@ async function setupProductPage(user) {
         window.location.href = "cart.html";
       });
       grid.appendChild(card);
+      return;
     } catch (err) {
-      console.error(err);
+      console.error("Single product load error:", err);
       grid.innerHTML = "<p>Failed to load product.</p>";
-    }
-  } else {
-    // Generic product listing using same loader as customer home
-    pageTitle.textContent = "All Stationery";
-    try {
-      const snapshot = await db
-  .collection("products")
-  .where("published", "==", true)
-  .get();
-
-
-      let list = [];
-      if (snapshot.empty) {
-        list = PRELOADED_PRODUCTS.map((p, index) => ({
-          id: `static-${index}`,
-          ...p,
-          static: true
-        }));
-      } else {
-        list = snapshot.docs.map((doc) => ({
-          id: doc.id,
-          ...doc.data()
-        }));
-      }
-
-      grid.innerHTML = "";
-      list.forEach((p) => {
-        const card = document.createElement("div");
-        card.className = "product-card";
-        card.innerHTML = `
-          <div class="product-badge">${p.category || "Stationery"}</div>
-          <div class="product-name">${p.name}</div>
-          <div class="product-meta">${p.description || ""}</div>
-          <div class="product-price-row">
-            <span class="price-tag">₹${p.price}</span>
-            <span class="delivery-tag">${p.delivery || "15–20 min"}</span>
-          </div>
-          <div class="card-actions">
-            <button class="btn-mini-primary">Add to Cart</button>
-          </div>
-        `;
-        card.querySelector("button").addEventListener("click", async () => {
-          const idKey = p.static ? p.id : p.id;
-          const cartRef = db
-            .collection("carts")
-            .doc(user.uid)
-            .collection("items")
-            .doc(idKey);
-          await cartRef.set(
-            {
-              productId: p.static ? null : p.id,
-              name: p.name,
-              price: p.price,
-              qty: firebase.firestore.FieldValue.increment(1),
-              createdAt: firebase.firestore.FieldValue.serverTimestamp()
-            },
-            { merge: true }
-          );
-          window.location.href = "cart.html";
-        });
-        grid.appendChild(card);
-      });
-    } catch (err) {
-      console.error(err);
-      grid.innerHTML = "<p>Failed to load products.</p>";
-    }
-  }
-}
-
-// ==== CART PAGE ====
-async function setupCartPage(user) {
-  const listEl = querySel("cart-list");
-  const totalEl = querySel("cart-total");
-  const placeOrderBtn = querySel("place-order-btn");
-  const statusEl = querySel("cart-message");
-
-  async function loadCart() {
-    if (!user) return;
-    const snapshot = await db
-      .collection("carts")
-      .doc(user.uid)
-      .collection("items")
-      .get();
-
-    listEl.innerHTML = "";
-    let total = 0;
-
-    if (snapshot.empty) {
-      listEl.innerHTML = "<p>Your cart is empty.</p>";
-      totalEl.textContent = "0";
       return;
     }
-
-    snapshot.forEach((doc) => {
-      const item = { id: doc.id, ...doc.data() };
-      const lineTotal = (item.price || 0) * (item.qty || 1);
-      total += lineTotal;
-
-      const row = document.createElement("div");
-      row.className = "cart-item";
-      row.innerHTML = `
-        <div class="cart-item-main">
-          <div class="cart-item-name">${item.name}</div>
-          <div class="cart-item-meta">₹${item.price} x ${item.qty}</div>
-        </div>
-        <div class="cart-item-actions">
-          <div class="qty-controls">
-            <button data-action="dec">-</button>
-            <span>${item.qty}</span>
-            <button data-action="inc">+</button>
-          </div>
-          <button class="btn-mini-secondary remove-btn">Remove</button>
-        </div>
-      `;
-
-      const decBtn = row.querySelector('button[data-action="dec"]');
-      const incBtn = row.querySelector('button[data-action="inc"]');
-      const removeBtn = row.querySelector(".remove-btn");
-
-      incBtn.addEventListener("click", async () => {
-        await updateQty(item.id, (item.qty || 1) + 1);
-      });
-      decBtn.addEventListener("click", async () => {
-        const newQty = (item.qty || 1) - 1;
-        if (newQty <= 0) {
-          await deleteItem(item.id);
-        } else {
-          await updateQty(item.id, newQty);
-        }
-      });
-      removeBtn.addEventListener("click", async () => {
-        await deleteItem(item.id);
-      });
-
-      listEl.appendChild(row);
-    });
-
-    totalEl.textContent = total.toString();
   }
 
-  async function updateQty(id, qty) {
-    await db
-      .collection("carts")
-      .doc(user.uid)
-      .collection("items")
-      .doc(id)
-      .update({ qty });
-    await loadCart();
-  }
+  // CASE 2: Static product from preloaded list (name + price in URL)
+  if (nameParam && priceParam) {
+    const price = Number(priceParam) || 0;
+    if (pageTitle) pageTitle.textContent = nameParam;
 
-  async function deleteItem(id) {
-    await db
-      .collection("carts")
-      .doc(user.uid)
-      .collection("items")
-      .doc(id)
-      .delete();
-    await loadCart();
-  }
-
-  if (placeOrderBtn) {
-    placeOrderBtn.addEventListener("click", async () => {
-      statusEl.textContent = "";
-      const snapshot = await db
+    grid.innerHTML = "";
+    const card = document.createElement("div");
+    card.className = "product-card";
+    card.innerHTML = `
+      <div class="product-badge">Stationery</div>
+      <div class="product-name">${nameParam}</div>
+      <div class="product-meta">Quick pick stationery item.</div>
+      <div class="product-price-row">
+        <span class="price-tag">₹${price}</span>
+        <span class="delivery-tag">15–20 min</span>
+      </div>
+      <div class="card-actions">
+        <button class="btn-mini-primary">Add to Cart</button>
+      </div>
+    `;
+    card.querySelector("button").addEventListener("click", async () => {
+      if (!user) {
+        window.location.href = "login.html";
+        return;
+      }
+      const idKey = `static-${nameParam}-${price}`;
+      const cartRef = db
         .collection("carts")
         .doc(user.uid)
         .collection("items")
-        .get();
+        .doc(idKey);
 
-      if (snapshot.empty) {
-        statusEl.textContent = "Cart is empty.";
-        return;
-      }
-
-      let items = [];
-      let total = 0;
-      snapshot.forEach((doc) => {
-        const d = doc.data();
-        items.push({ id: doc.id, ...d });
-        total += (d.price || 0) * (d.qty || 1);
-      });
-
-      const orderRef = await db.collection("orders").add({
-        userId: user.uid,
-        items,
-        total,
-        createdAt: firebase.firestore.FieldValue.serverTimestamp()
-      });
-
-      // Clear cart
-      const batch = db.batch();
-      snapshot.docs.forEach((doc) => batch.delete(doc.ref));
-      await batch.commit();
-
-      window.location.href = `order-confirmation.html?orderId=${orderRef.id}`;
+      await cartRef.set(
+        {
+          productId: null,
+          name: nameParam,
+          price,
+          qty: firebase.firestore.FieldValue.increment(1),
+          createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        },
+        { merge: true }
+      );
+      window.location.href = "cart.html";
     });
+    grid.appendChild(card);
+    return;
   }
 
-  await loadCart();
-}
+  // CASE 3: Generic "All products" list
+  if (pageTitle) pageTitle.textContent = "All Stationery";
 
-// ==== ORDER CONFIRMATION PAGE ====
-function setupOrderConfirmationPage(user) {
-  const orderId = getQueryParam("orderId");
-  const orderIdEl = querySel("order-id");
-  if (orderId && orderIdEl) {
-    orderIdEl.textContent = orderId;
-  }
-}
+  let list = [];
 
-// ==== SELLER DASHBOARD ====
-// ==== SELLER DASHBOARD ====
-function setupSellerPage(user) {
-  const form = querySel("product-form");
-  const listEl = querySel("seller-products");
-  const badgeEl = querySel("seller-role-badge");
-
-  if (badgeEl) badgeEl.textContent = "Seller";
-
-  async function loadMyProducts() {
-    if (!user) return;
+  // Try to load from Firestore, but don't die if it fails
+  try {
     const snapshot = await db
       .collection("products")
-      .where("sellerId", "==", user.uid)
-      .orderBy("createdAt", "desc")
-      .get();
+      .where("published", "==", true)
+      .get(); // NO orderBy -> NO index needed
 
-    listEl.innerHTML = "";
-
-    if (snapshot.empty) {
-      listEl.innerHTML = "<p>No products yet. Add something fresh ✏️</p>";
-      return;
+    if (!snapshot.empty) {
+      list = snapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data()
+      }));
     }
-
-    snapshot.forEach((doc) => {
-      const p = { id: doc.id, ...doc.data() };
-      const row = document.createElement("div");
-      row.className = "seller-item";
-      row.innerHTML = `
-        <div class="seller-item-main">
-          <div><strong>${p.name}</strong></div>
-          <div style="font-size:0.75rem;color:#bbbbbb;">₹${p.price} · ${p.category || "Stationery"}</div>
-        </div>
-        <div style="display:flex;flex-direction:column;gap:0.35rem;align-items:flex-end;">
-          <span class="seller-status-badge ${
-            p.published ? "published" : "draft"
-          }">${p.published ? "Published" : "Draft"}</span>
-          <button class="btn-mini-secondary toggle-btn">${
-            p.published ? "Unpublish" : "Publish"
-          }</button>
-        </div>
-      `;
-
-      const toggleBtn = row.querySelector(".toggle-btn");
-      toggleBtn.addEventListener("click", async () => {
-        await db.collection("products").doc(p.id).update({
-          published: !p.published
-        });
-        loadMyProducts();
-      });
-
-      listEl.appendChild(row);
-    });
+  } catch (err) {
+    console.error("All products Firestore error:", err);
+    // We won't show the scary "Failed" message anymore.
+    // We'll just fall back to preloaded products instead.
   }
 
-  if (form) {
-    form.addEventListener("submit", async (e) => {
-      e.preventDefault();
-      const name = form["name"].value.trim();
-      const price = Number(form["price"].value);
-      const category = form["category"].value.trim();
-      const description = form["description"].value.trim();
-      const publishNow = !!form["publishNow"].checked;  // 👈 NEW
-
-      if (!name || !price) return;
-
-      await db.collection("products").add({
-        name,
-        price,
-        category: category || "Stationery",
-        description,
-        delivery: "15–20 min",
-        sellerId: user.uid,
-        published: publishNow, // 👈 publish immediately if checked
-        createdAt: firebase.firestore.FieldValue.serverTimestamp()
-      });
-
-      form.reset();
-      loadMyProducts();
-    });
+  // If Firestore had nothing OR failed, fall back to default preloaded items
+  if (list.length === 0) {
+    list = PRELOADED_PRODUCTS.map((p, index) => ({
+      id: `static-${index}`,
+      ...p,
+      static: true
+    }));
   }
 
-  loadMyProducts();
+  grid.innerHTML = "";
+  list.forEach((p) => {
+    const card = document.createElement("div");
+    card.className = "product-card";
+    card.innerHTML = `
+      <div class="product-badge">${p.category || "Stationery"}</div>
+      <div class="product-name">${p.name}</div>
+      <div class="product-meta">${p.description || ""}</div>
+      <div class="product-price-row">
+        <span class="price-tag">₹${p.price}</span>
+        <span class="delivery-tag">${p.delivery || "15–20 min"}</span>
+      </div>
+      <div class="card-actions">
+        <button class="btn-mini-primary">Add to Cart</button>
+      </div>
+    `;
+
+    card.querySelector("button").addEventListener("click", async () => {
+      if (!user) {
+        window.location.href = "login.html";
+        return;
+      }
+      const idKey = p.static ? p.id : p.id;
+      const cartRef = db
+        .collection("carts")
+        .doc(user.uid)
+        .collection("items")
+        .doc(idKey);
+
+      await cartRef.set(
+        {
+          productId: p.static ? null : p.id,
+          name: p.name,
+          price: p.price,
+          qty: firebase.firestore.FieldValue.increment(1),
+          createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        },
+        { merge: true }
+      );
+      window.location.href = "cart.html";
+    });
+
+    grid.appendChild(card);
+  });
 }
-
-
-
-
-
