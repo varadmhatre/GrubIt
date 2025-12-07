@@ -618,6 +618,7 @@ function setupOrderConfirmationPage(user) {
 }
 
 // ==== SELLER DASHBOARD ====
+// ==== SELLER DASHBOARD ====
 function setupSellerPage(user) {
   const form = querySel("product-form");
   const listEl = querySel("seller-products");
@@ -678,6 +679,7 @@ function setupSellerPage(user) {
       const price = Number(form["price"].value);
       const category = form["category"].value.trim();
       const description = form["description"].value.trim();
+      const publishNow = !!form["publishNow"].checked;  // 👈 NEW
 
       if (!name || !price) return;
 
@@ -688,7 +690,7 @@ function setupSellerPage(user) {
         description,
         delivery: "15–20 min",
         sellerId: user.uid,
-        published: false, // must publish manually
+        published: publishNow, // 👈 publish immediately if checked
         createdAt: firebase.firestore.FieldValue.serverTimestamp()
       });
 
@@ -699,3 +701,5 @@ function setupSellerPage(user) {
 
   loadMyProducts();
 }
+
+
