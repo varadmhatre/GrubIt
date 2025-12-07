@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>GrubIt – Home</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="styles.css">
+  <!-- Firebase CDN -->
+  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore-compat.js"></script>
+</head>
+<body data-page="customer">
+<div class="app-shell">
+  <header class="app-header">
+    <div class="navbar">
+      <div class="brand">
+        <div class="brand-logo">G</div>
+        <div class="brand-text">
+          <div class="brand-name">GrubIt</div>
+          <div class="brand-tagline">Stationery in under 30 minutes.</div>
+        </div>
+      </div>
+      <div class="nav-links">
+        <a href="customer.html">Home</a>
+        <a href="product.html">All Products</a>
+        <a href="cart.html">Cart</a>
+        <a href="seller.html">Sell on GrubIt</a>
+        <button id="logout-btn" class="nav-cta">Logout</button>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="hero-main">
+        <div class="hero-badge">
+          <span>⚡ Instant Delivery</span>
+          <span>Across your city</span>
+        </div>
+        <div class="hero-title">Stationery in 20 minutes, max.</div>
+        <div class="hero-subtitle">
+          Pens, notebooks, highlighters, math tools – everything you need before the deadline hits.
+        </div>
+        <div class="hero-highlights">
+          <div class="hero-pill">No minimum order</div>
+          <div class="hero-pill">Exam-night essentials</div>
+          <div class="hero-pill">Trusted local sellers</div>
+        </div>
+
+        <div class="search-bar">
+          <input id="search-input" type="text" placeholder="Search pens, notebooks, markers…">
+          <button type="button">Search</button>
+        </div>
+      </div>
+
+      <aside class="hero-side">
+        <div class="hero-stat">
+          <span>Active sellers</span>
+          <span>Live</span>
+        </div>
+        <div class="hero-stat">
+          <span>Avg delivery time</span>
+          <span>18 mins</span>
+        </div>
+        <div class="hero-stat">
+          <span>Popular right now</span>
+          <span>Exam pads, blue gel pens</span>
+        </div>
+      </aside>
+    </section>
+
+    <section>
+      <div class="section-title">Recommended for you</div>
+      <div id="home-product-grid" class="product-grid">
+        <!-- Filled by JS -->
+      </div>
+    </section>
+  </main>
+
+  <div class="cart-bar">
+    <div class="cart-bar-summary">
+      <div><span class="cart-count" id="cart-count">0</span> items in cart</div>
+      <div>Total: ₹<span id="cart-total">0</span></div>
+    </div>
+    <button onclick="window.location.href='cart.html'">View cart &amp; checkout</button>
+  </div>
+
+  <footer class="app-footer">
+    <div class="footer-inner">
+      <span>GrubIt – For last-minute chaos and big dreams.</span>
+      <span>Contact: <a href="mailto:varadmhatre67@gmail.com">varadmhatre67@gmail.com</a> · 8806606371</span>
+    </div>
+  </footer>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>

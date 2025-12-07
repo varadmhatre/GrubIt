@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>GrubIt – Order Confirmed</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="styles.css">
+  <!-- Firebase CDN -->
+  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore-compat.js"></script>
+</head>
+<body data-page="order-confirmation">
+<div class="app-shell">
+  <header class="app-header">
+    <div class="navbar">
+      <div class="brand">
+        <div class="brand-logo">G</div>
+        <div class="brand-text">
+          <div class="brand-name">GrubIt</div>
+          <div class="brand-tagline">Order placed successfully.</div>
+        </div>
+      </div>
+      <div class="nav-links">
+        <a href="customer.html">Back to Home</a>
+        <button id="logout-btn" class="nav-cta">Logout</button>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <div class="order-wrapper">
+      <h1>You're all set ✅</h1>
+      <p style="margin-top:0.4rem;font-size:0.9rem;color:#cccccc;">
+        Your stationery is on its way. Keep your phone handy – your delivery partner may call.
+      </p>
+      <p style="margin-top:0.75rem;font-size:0.8rem;color:#aaaaaa;">
+        Order ID: <span id="order-id" style="color:var(--primary);"></span>
+      </p>
+
+      <button onclick="window.location.href='customer.html'" class="btn" style="margin-top:1.2rem;">
+        Continue shopping
+      </button>
+    </div>
+  </main>
+
+  <footer class="app-footer">
+    <div class="footer-inner">
+      <span>GrubIt – Refills for every phase of life.</span>
+      <span>Contact: <a href="mailto:varadmhatre67@gmail.com">varadmhatre67@gmail.com</a> · 8806606371</span>
+    </div>
+  </footer>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>

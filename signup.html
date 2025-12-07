@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>GrubIt – Sign up</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="styles.css">
+  <!-- Firebase CDN -->
+  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore-compat.js"></script>
+</head>
+<body data-page="signup">
+<div class="app-shell">
+  <header class="app-header">
+    <div class="navbar">
+      <div class="brand">
+        <div class="brand-logo">G</div>
+        <div class="brand-text">
+          <div class="brand-name">GrubIt Stationery</div>
+          <div class="brand-tagline">Build. Sketch. Study. Faster.</div>
+        </div>
+      </div>
+      <div class="nav-links">
+        <a href="login.html">Already have an account?</a>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <div class="auth-wrapper">
+      <div class="auth-card">
+        <div class="auth-title">Create your GrubIt ID</div>
+        <div class="auth-subtitle">Choose if you want to order or sell (or both).</div>
+
+        <form id="signup-form">
+          <div class="form-group">
+            <label for="signup-name">Full Name</label>
+            <input id="signup-name" name="name" type="text" placeholder="Varad Mhatre" required>
+          </div>
+
+          <div class="form-group">
+            <label for="signup-email">Email</label>
+            <input id="signup-email" name="email" type="email" placeholder="you@example.com" required>
+          </div>
+
+          <div class="form-group">
+            <label for="signup-password">Password</label>
+            <input id="signup-password" name="password" type="password" placeholder="Min 6 characters" required>
+          </div>
+
+          <div class="form-group">
+            <label>Choose your role</label>
+            <div class="role-options">
+              <label class="role-pill">
+                <input type="radio" name="role" value="customer" checked>
+                <span>Customer</span>
+              </label>
+              <label class="role-pill">
+                <input type="radio" name="role" value="seller">
+                <span>Seller</span>
+              </label>
+            </div>
+          </div>
+
+          <button class="btn" type="submit">Sign up</button>
+        </form>
+
+        <div id="signup-message" class="message"></div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="app-footer">
+    <div class="footer-inner">
+      <span>GrubIt – Stationery in a blink.</span>
+      <span>Contact: <a href="mailto:varadmhatre67@gmail.com">varadmhatre67@gmail.com</a> · 8806606371</span>
+    </div>
+  </footer>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>

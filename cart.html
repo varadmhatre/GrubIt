@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>GrubIt – Cart</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="styles.css">
+  <!-- Firebase CDN -->
+  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore-compat.js"></script>
+</head>
+<body data-page="cart">
+<div class="app-shell">
+  <header class="app-header">
+    <div class="navbar">
+      <div class="brand">
+        <div class="brand-logo">G</div>
+        <div class="brand-text">
+          <div class="brand-name">GrubIt</div>
+          <div class="brand-tagline">Almost done. Just confirm.</div>
+        </div>
+      </div>
+      <div class="nav-links">
+        <a href="customer.html">Home</a>
+        <a href="product.html">All Products</a>
+        <button id="logout-btn" class="nav-cta">Logout</button>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <h1 class="section-title">Your Cart</h1>
+    <div id="cart-list" class="cart-list">
+      <!-- JS fills items -->
+    </div>
+
+    <div class="cart-summary-box">
+      <div>Order total: ₹<span id="cart-total">0</span></div>
+      <div style="font-size:0.75rem;color:#bbbbbb;">
+        Delivery fees (if any) will be shown on the next screen.
+      </div>
+      <button id="place-order-btn" class="btn" type="button">Place Order</button>
+      <div id="cart-message" class="message"></div>
+    </div>
+  </main>
+
+  <footer class="app-footer">
+    <div class="footer-inner">
+      <span>GrubIt – Sharp notes, sharper future.</span>
+      <span>Contact: <a href="mailto:varadmhatre67@gmail.com">varadmhatre67@gmail.com</a> · 8806606371</span>
+    </div>
+  </footer>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>

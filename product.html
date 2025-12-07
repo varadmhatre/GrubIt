@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>GrubIt – Products</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="styles.css">
+  <!-- Firebase CDN -->
+  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore-compat.js"></script>
+</head>
+<body data-page="product">
+<div class="app-shell">
+  <header class="app-header">
+    <div class="navbar">
+      <div class="brand">
+        <div class="brand-logo">G</div>
+        <div class="brand-text">
+          <div class="brand-name">GrubIt</div>
+          <div class="brand-tagline">Browse every pen, page & pastel.</div>
+        </div>
+      </div>
+      <div class="nav-links">
+        <a href="customer.html">Home</a>
+        <a href="product.html">All Products</a>
+        <a href="cart.html">Cart</a>
+        <button id="logout-btn" class="nav-cta">Logout</button>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <h1 id="product-page-title" class="section-title">All Stationery</h1>
+    <div id="product-grid" class="product-grid product-layout">
+      <!-- Filled via JS -->
+    </div>
+  </main>
+
+  <footer class="app-footer">
+    <div class="footer-inner">
+      <span>GrubIt – One stop for stationery.</span>
+      <span>Contact: <a href="mailto:varadmhatre67@gmail.com">varadmhatre67@gmail.com</a> · 8806606371</span>
+    </div>
+  </footer>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>GrubIt – Seller Dashboard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="styles.css">
+  <!-- Firebase CDN -->
+  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore-compat.js"></script>
+</head>
+<body data-page="seller">
+<div class="app-shell">
+  <header class="app-header">
+    <div class="navbar">
+      <div class="brand">
+        <div class="brand-logo">G</div>
+        <div class="brand-text">
+          <div class="brand-name">GrubIt</div>
+          <div class="brand-tagline">Powering local stationery heroes.</div>
+        </div>
+      </div>
+      <div class="nav-links">
+        <a href="customer.html">Customer View</a>
+        <a href="product.html">All Products</a>
+        <button id="logout-btn" class="nav-cta">Logout</button>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <h1 class="section-title">
+      Seller Dashboard <span id="seller-role-badge" style="font-size:0.8rem;color:var(--primary);"></span>
+    </h1>
+
+    <div class="seller-layout">
+      <div class="seller-card">
+        <h2>Add new product</h2>
+        <form id="product-form" style="margin-top:0.75rem;">
+          <div class="form-group">
+            <label for="product-name">Product name</label>
+            <input id="product-name" name="name" type="text" placeholder="A4 Spiral Notebook" required>
+          </div>
+          <div class="form-group">
+            <label for="product-price">Price (₹)</label>
+            <input id="product-price" name="price" type="number" min="1" step="1" required>
+          </div>
+          <div class="form-group">
+            <label for="product-category">Category</label>
+            <input id="product-category" name="category" type="text" placeholder="Notebooks, Pens, Markers…">
+          </div>
+          <div class="form-group">
+            <label for="product-description">Short description</label>
+            <input id="product-description" name="description" type="text" placeholder="Thick 70 GSM paper, exam-ready.">
+          </div>
+          <button class="btn" type="submit">Save as draft</button>
+          <div style="font-size:0.75rem;color:#aaaaaa;margin-top:0.4rem;">
+            Newly added items start as <strong>Draft</strong>. Publish them to show to all customers worldwide.
+          </div>
+        </form>
+      </div>
+
+      <div class="seller-card">
+        <h2>Your products</h2>
+        <div id="seller-products" class="seller-list">
+          <!-- Filled via JS -->
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="app-footer">
+    <div class="footer-inner">
+      <span>GrubIt – Helping local shops go global.</span>
+      <span>Contact: <a href="mailto:varadmhatre67@gmail.com">varadmhatre67@gmail.com</a> · 8806606371</span>
+    </div>
+  </footer>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>
