@@ -47,9 +47,19 @@
             <input id="product-price" name="price" type="number" min="1" step="1" required>
           </div>
           <div class="form-group">
-            <label for="product-category">Category</label>
-            <input id="product-category" name="category" type="text" placeholder="Notebooks, Pens, Markers…">
-          </div>
+  <label for="product-category">Category</label>
+  <select id="product-category" name="category">
+    <option value="Notebooks">Notebooks</option>
+    <option value="Pens">Pens</option>
+    <option value="Markers & Highlighters">Markers &amp; Highlighters</option>
+    <option value="Art Supplies">Art Supplies</option>
+    <option value="Exam Pads & Registers">Exam Pads &amp; Registers</option>
+    <option value="Math & Geometry Tools">Math &amp; Geometry Tools</option>
+    <option value="Sticky Notes & Planners">Sticky Notes &amp; Planners</option>
+    <option value="Other Stationery">Other Stationery</option>
+  </select>
+</div>
+
           <div class="form-group">
             <label for="product-description">Short description</label>
             <input id="product-description" name="description" type="text" placeholder="Thick 70 GSM paper, exam-ready.">
@@ -89,3 +99,4 @@
 <script src="app.js"></script>
 </body>
 </html>
+
