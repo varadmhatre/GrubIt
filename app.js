@@ -413,10 +413,10 @@ async function setupProductPage(user) {
     pageTitle.textContent = "All Stationery";
     try {
       const snapshot = await db
-        .collection("products")
-        .where("published", "==", true)
-        .orderBy("createdAt", "desc")
-        .get();
+  .collection("products")
+  .where("published", "==", true)
+  .get();
+
 
       let list = [];
       if (snapshot.empty) {
@@ -701,6 +701,7 @@ function setupSellerPage(user) {
 
   loadMyProducts();
 }
+
 
 
 
