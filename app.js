@@ -198,10 +198,9 @@ async function setupCustomerPage(user) {
   async function loadProducts() {
     try {
       const snapshot = await db
-        .collection("products")
-        .where("published", "==", true)
-        .orderBy("createdAt", "desc")
-        .get();
+  .collection("products")
+  .where("sellerId", "==", user.uid)
+  .get();
 
       if (snapshot.empty) {
         // No products yet – show preloaded
@@ -701,5 +700,6 @@ function setupSellerPage(user) {
 
   loadMyProducts();
 }
+
 
 
