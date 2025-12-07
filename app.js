@@ -197,10 +197,11 @@ async function setupCustomerPage(user) {
   // Load products from Firestore where published = true
   async function loadProducts() {
     try {
-      const snapshot = await db
+    const snapshot = await db
   .collection("products")
-  .where("sellerId", "==", user.uid)
+  .where("published", "==", true)
   .get();
+
 
       if (snapshot.empty) {
         // No products yet – show preloaded
@@ -700,6 +701,7 @@ function setupSellerPage(user) {
 
   loadMyProducts();
 }
+
 
 
 
