@@ -546,3 +546,112 @@ async function setupProductPage(user) {
     grid.appendChild(card);
   });
 }
+
+// ==== SELLER DASHBOARD ====
+function setupSellerPage(user) {
+  const form = querySel("product-form");
+  const listEl = querySel("seller-products");
+  const badgeEl = querySel("seller-role-badge");
+  const msgElId = "seller-message";
+
+  if (badgeEl) badgeEl.textContent = "Seller";
+
+  async function loadMyProducts() {
+    if (!user || !listEl) return;
+
+    try {
+      const snapshot = await db
+        .collection("products")
+        .where("sellerId", "==", user.uid)
+        .get(); // simple query, no index needed
+
+      listEl.innerHTML = "";
+
+      if (snapshot.empty) {
+        listEl.innerHTML = "<p>No products yet. Add something fresh ✏️</p>";
+        return;
+      }
+
+      snapshot.forEach((doc) => {
+        const p = { id: doc.id, ...doc.data() };
+        const row = document.createElement("div");
+        row.className = "seller-item";
+        row.innerHTML = `
+          <div class="seller-item-main">
+            <div><strong>${p.name}</strong></div>
+            <div style="font-size:0.75rem;color:#bbbbbb;">₹${p.price} · ${p.category || "Stationery"}</div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:0.35rem;align-items:flex-end;">
+            <span class="seller-status-badge ${
+              p.published ? "published" : "draft"
+            }">${p.published ? "Published" : "Draft"}</span>
+            <button class="btn-mini-secondary toggle-btn">${
+              p.published ? "Unpublish" : "Publish"
+            }</button>
+          </div>
+        `;
+
+        const toggleBtn = row.querySelector(".toggle-btn");
+        toggleBtn.addEventListener("click", async () => {
+          try {
+            await db.collection("products").doc(p.id).update({
+              published: !p.published
+            });
+            loadMyProducts();
+          } catch (err) {
+            console.error("Toggle publish error:", err);
+            showMessage(msgElId, err.message || "Failed to update product.", "error");
+          }
+        });
+
+        listEl.appendChild(row);
+      });
+    } catch (err) {
+      console.error("Load my products error:", err);
+      listEl.innerHTML = "<p>Could not load products (check console).</p>";
+      showMessage(msgElId, err.message || "Failed to load products.", "error");
+    }
+  }
+
+  if (form) {
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      showMessage(msgElId, "", "error");
+
+      const name = form["name"].value.trim();
+      const price = Number(form["price"].value);
+      const category = form["category"].value.trim();
+      const description = form["description"].value.trim();
+      const publishNow = !!form["publishNow"].checked;
+
+      if (!name || !price) {
+        showMessage(msgElId, "Name and price are required.", "error");
+        return;
+      }
+
+      try {
+        await db.collection("products").add({
+          name,
+          price,
+          category: category || "Stationery",
+          description,
+          delivery: "15–20 min",
+          sellerId: user.uid,
+          published: publishNow,
+          createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+
+        form.reset();
+        showMessage(msgElId, "Product saved successfully.", "success");
+        await loadMyProducts();
+      } catch (err) {
+        console.error("Add product error:", err);
+        showMessage(msgElId, err.message || "Failed to save product.", "error");
+      }
+    });
+  }
+
+  loadMyProducts();
+}
+
+
